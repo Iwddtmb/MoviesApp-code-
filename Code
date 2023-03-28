@@ -1,0 +1,105 @@
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MoviesAppTheme {
+               val navController = rememberNavController()
+               SetupNavHost(navController = navController)
+            }
+        }
+    }
+}
+
+
+class Constants {
+    object Screens {
+        const val SPLASH_SCREEN = "splash_screen"
+        const val MAIN_SCREEN = "main_screen"
+        const val DETAILS_SCREEN = "details_screen"
+    }
+}
+
+sealed class Screens(val route: String) {
+    object  Splash: Screens(route =  Constants.Screens.SPLASH_SCREEN)
+    object  Main: Screens(route =  Constants.Screens.MAIN_SCREEN)
+    object  Details: Screens(route =  Constants.Screens.DETAILS_SCREEN)
+}
+
+
+@Composable
+fun SetupNavHost(navController: NavHostController) {
+    NavHost(
+        navController = navController,
+        startDestination = Screens.Splash.route
+    ) {
+        composable(route = Screens.Splash.route) {
+            SplashScreen(navController = navController)
+        }
+        composable(route = Screens.Main.route) {
+            MainScreen()
+        }
+        composable(route = Screens.Details.route) {
+
+        }
+    }
+}
+
+@Composable
+fun SplashScreen(navController: NavController) {
+    var startAnimate by remember {
+        mutableStateOf(false)
+    }
+    val alphaAnimation = animateFloatAsState(
+        targetValue =  if (startAnimate) 1f else 0f,
+        animationSpec = tween(durationMillis = 3000)
+        )
+    LaunchedEffect(key1 = true) {
+        startAnimate = true
+        delay(4000)
+        navController.navigate(Screens.Main.route)
+    }
+    Splash(alpha = alphaAnimation.value)
+}
+
+@Composable
+fun Splash(alpha: Float) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+        ) {
+         Icon(
+             modifier = Modifier
+                 .size(120.dp)
+                 .alpha(alpha = alpha),
+                 imageVector = Icons.Default.PlayArrow,
+             contentDescription = "",
+             tint = Color.Black
+         )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun prevSplash () {
+    MoviesAppTheme {
+        Splash()
+    }
+    
+}
+
+fun Splash() {
+    TODO("Not yet implemented")
+}
+
+@Composable
+fun MainScreen() {
+  Surface(
+      modifier = Modifier
+      .fillMaxSize()
+  ) {
+    Text(text = "Test")
+    }
+}
+
+
+
